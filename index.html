@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
@@ -6,13 +6,44 @@
   <title>Nebula Shop</title>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
+
   <style>
-    body {
-      font-family: 'Press Start 2P', monospace;
+    body { font-family: 'Press Start 2P', monospace; }
+
+    /* Pantalla de carga */
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: black;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      flex-direction: column;
+    }
+
+    .spinner {
+      width: 60px;
+      height: 60px;
+      border: 6px solid #6b21a8;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
   </style>
 </head>
+
 <body class="min-h-screen w-full bg-gradient-to-br from-purple-900 via-black to-purple-950 flex flex-col items-center p-10 text-white">
+
+  <!-- Loader -->
+  <div id="loader">
+    <div class="spinner"></div>
+    <p class="mt-4 text-purple-300 text-xl">Cargando...</p>
+  </div>
 
   <h1 class="text-5xl font-bold mb-6 drop-shadow-lg">Nebula Shop</h1>
 
@@ -27,24 +58,26 @@
     <h3 class="text-2xl font-bold text-purple-300">Carrito</h3>
     <ul id="cartList" class="mt-2 max-h-40 overflow-y-auto text-sm"></ul>
     <p id="total" class="text-xl mt-4 font-bold text-purple-400">Total: PEN 0</p>
-    <button class="w-full mt-3 py-2 bg-purple-700 rounded-xl hover:bg-purple-800 transition">Comprar</button>
+    <button id="buyBtn" class="w-full mt-3 py-2 bg-purple-700 rounded-xl hover:bg-purple-800 transition">Comprar</button>
   </div>
 
   <script>
     let currency = "PEN";
     const cart = [];
 
+    /* Precios aumentados */
     const items = [
-      { id: 1, name: "Rango Aleatorio", description: "Obtén un rango aleatorio estilo Minecraft.", price: { PEN: 5, USD: 1.5 } },
-      { id: 2, name: "Revivir", description: "Reaparece al instante como en Minecraft.", price: { PEN: 10, USD: 3 } },
-      { id: 3, name: "Llave Épica", description: "Abre cofres especiales con loot aleatorio.", price: { PEN: 8, USD: 2.2 } },
-      { id: 4, name: "Boost de XP", description: "Duplica tu XP durante 30 minutos.", price: { PEN: 12, USD: 3.5 } }
+      { id: 1, name: "Rango Aleatorio", description: "Obtén un rango aleatorio estilo Minecraft.", price: { PEN: 7, USD: 2 } },
+      { id: 2, name: "Revivir", description: "Reaparece al instante como en Minecraft.", price: { PEN: 18, USD: 5 } },
+      { id: 3, name: "Llave Épica", description: "Abre cofres especiales con loot aleatorio.", price: { PEN: 10, USD: 3 } },
+      { id: 4, name: "Boost de XP", description: "Duplica tu XP durante 30 minutos.", price: { PEN: 15, USD: 4 } }
     ];
 
     const itemsContainer = document.getElementById("items");
     const cartList = document.getElementById("cartList");
     const totalText = document.getElementById("total");
 
+    /* Renderizar Items */
     function renderItems() {
       itemsContainer.innerHTML = "";
       items.forEach(item => {
@@ -61,20 +94,25 @@
         itemsContainer.appendChild(card);
       });
     }
-a
+
+    /* Agregar al carrito */
     function addToCart(item) {
       cart.push(item);
       renderCart();
     }
 
+    /* Renderizar carrito */
     function renderCart() {
-      cartList.innerHTML = cart.map(i => `<li class='text-gray-200'>• ${i.name} — ${currency} ${i.price[currency]}</li>`).join("");
+      cartList.innerHTML = cart.map(i => 
+        `<li class='text-gray-200'>• ${i.name} — ${currency} ${i.price[currency]}</li>`
+      ).join("");
 
       const total = cart.reduce((acc, i) => acc + i.price[currency], 0);
       totalText.textContent = `Total: ${currency} ${total.toFixed(2)}`;
     }
 
-    document.getElementById("penBtn").addEventListener("click", () => {
+    /* Cambiar monedas */
+    penBtn.addEventListener("click", () => {
       currency = "PEN";
       renderItems();
       renderCart();
@@ -82,7 +120,7 @@ a
       usdBtn.className = "px-4 py-2 rounded-xl bg-gray-700";
     });
 
-    document.getElementById("usdBtn").addEventListener("click", () => {
+    usdBtn.addEventListener("click", () => {
       currency = "USD";
       renderItems();
       renderCart();
@@ -90,7 +128,33 @@ a
       usdBtn.className = "px-4 py-2 rounded-xl bg-purple-600";
     });
 
+    /* Botón Comprar */
+    document.getElementById("buyBtn").addEventListener("click", () => {
+      if (cart.length === 0) {
+        alert("Tu carrito está vacío.");
+        return;
+      }
+
+      const total = cart.reduce((acc, i) => acc + i.price[currency], 0);
+
+      alert(`Compra realizada por ${currency} ${total.toFixed(2)}.\n¡Gracias por tu compra!`);
+
+      cart.length = 0; // limpiar carrito
+      renderCart();
+    });
+
+    /* Loader */
+    window.onload = () => {
+      setTimeout(() => {
+        document.getElementById("loader").style.opacity = "0";
+        setTimeout(() => {
+          document.getElementById("loader").style.display = "none";
+        }, 500);
+      }, 1200);
+    };
+
     renderItems();
   </script>
+
 </body>
 </html>
