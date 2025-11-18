@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Nebula Shop</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Press Start 2P', monospace;
+    }
+  </style>
+</head>
+<body class="min-h-screen w-full bg-gradient-to-br from-purple-900 via-black to-purple-950 flex flex-col items-center p-10 text-white">
+
+  <h1 class="text-5xl font-bold mb-6 drop-shadow-lg">Nebula Shop</h1>
+
+  <div class="flex gap-4 mb-6">
+    <button id="penBtn" class="px-4 py-2 rounded-xl bg-purple-600">Soles (PEN)</button>
+    <button id="usdBtn" class="px-4 py-2 rounded-xl bg-gray-700">Dólares (USD)</button>
+  </div>
+
+  <div id="items" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-5xl"></div>
+
+  <div class="fixed bottom-6 right-6 bg-black/60 backdrop-blur-xl border border-purple-700 p-6 rounded-2xl shadow-2xl w-72">
+    <h3 class="text-2xl font-bold text-purple-300">Carrito</h3>
+    <ul id="cartList" class="mt-2 max-h-40 overflow-y-auto text-sm"></ul>
+    <p id="total" class="text-xl mt-4 font-bold text-purple-400">Total: PEN 0</p>
+    <button class="w-full mt-3 py-2 bg-purple-700 rounded-xl hover:bg-purple-800 transition">Comprar</button>
+  </div>
+
+  <script>
+    let currency = "PEN";
+    const cart = [];
+
+    const items = [
+      { id: 1, name: "Rango Aleatorio", description: "Obtén un rango aleatorio estilo Minecraft.", price: { PEN: 5, USD: 1.5 } },
+      { id: 2, name: "Revivir", description: "Reaparece al instante como en Minecraft.", price: { PEN: 10, USD: 3 } },
+      { id: 3, name: "Llave Épica", description: "Abre cofres especiales con loot aleatorio.", price: { PEN: 8, USD: 2.2 } },
+      { id: 4, name: "Boost de XP", description: "Duplica tu XP durante 30 minutos.", price: { PEN: 12, USD: 3.5 } }
+    ];
+
+    const itemsContainer = document.getElementById("items");
+    const cartList = document.getElementById("cartList");
+    const totalText = document.getElementById("total");
+
+    function renderItems() {
+      itemsContainer.innerHTML = "";
+      items.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "bg-black/40 border border-purple-700 rounded-2xl p-6 shadow-xl hover:scale-105 transition";
+        card.innerHTML = `
+          <h2 class="text-2xl font-bold text-purple-300">${item.name}</h2>
+          <p class="text-sm text-gray-300 mt-2">${item.description}</p>
+          <p class="text-xl mt-4 font-bold text-purple-400">${currency} ${item.price[currency]}</p>
+          <button class="w-full mt-4 py-2 bg-purple-700 rounded-xl hover:bg-purple-800 transition">Agregar al carrito</button>
+        `;
+
+        card.querySelector("button").addEventListener("click", () => addToCart(item));
+        itemsContainer.appendChild(card);
+      });
+    }
+
+    function addToCart(item) {
+      cart.push(item);
+      renderCart();
+    }
+
+    function renderCart() {
+      cartList.innerHTML = cart.map(i => `<li class='text-gray-200'>• ${i.name} — ${currency} ${i.price[currency]}</li>`).join("");
+
+      const total = cart.reduce((acc, i) => acc + i.price[currency], 0);
+      totalText.textContent = `Total: ${currency} ${total.toFixed(2)}`;
+    }
+
+    document.getElementById("penBtn").addEventListener("click", () => {
+      currency = "PEN";
+      renderItems();
+      renderCart();
+      penBtn.className = "px-4 py-2 rounded-xl bg-purple-600";
+      usdBtn.className = "px-4 py-2 rounded-xl bg-gray-700";
+    });
+
+    document.getElementById("usdBtn").addEventListener("click", () => {
+      currency = "USD";
+      renderItems();
+      renderCart();
+      penBtn.className = "px-4 py-2 rounded-xl bg-gray-700";
+      usdBtn.className = "px-4 py-2 rounded-xl bg-purple-600";
+    });
+
+    renderItems();
+  </script>
+</body>
+</html>
